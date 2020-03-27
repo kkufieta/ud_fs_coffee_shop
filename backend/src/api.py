@@ -18,6 +18,35 @@ CORS(app)
 '''
 # db_drop_and_create_all()
 
+
+# =====
+# Error handlers for all expected errors.
+# =====
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        'success': False,
+        'error': 400,
+        'message': 'bad request'
+    }), 400
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        'success': False,
+        'error': 404,
+        'message': 'method not allowed'
+    }), 404
+
+@app.errorhandler(405)
+def not_found(error):
+    return jsonify({
+        'success': False,
+        'error': 405,
+        'message': 'method not allowed'
+    }), 405
+
+
 ## ROUTES
 '''
 @TODO implement endpoint
