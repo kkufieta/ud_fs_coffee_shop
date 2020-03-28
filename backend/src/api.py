@@ -30,6 +30,22 @@ def bad_request(error):
         'message': 'bad request'
     }), 400
 
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+        'success': False,
+        'error': 401,
+        'message': 'unauthorized'
+    }), 401
+
+@app.errorhandler(403)
+def forbidden(error):
+    return jsonify({
+        'success': False,
+        'error': 403,
+        'message': 'forbidden'
+    }), 403
+
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({
@@ -46,6 +62,29 @@ def not_found(error):
         'message': 'method not allowed'
     }), 405
 
+@app.errorhandler(422)
+def unprocessable_entity(error):
+    return jsonify({
+        'success': False,
+        'error': 422,
+        'message': 'unprocessable entity'
+    }), 422
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({
+        'success': False,
+        'error': 500,
+        'message': 'internal server error'
+    }), 500
+
+@app.errorhandler(503)
+def service_unavailable(error):
+    return jsonify({
+        'success': False,
+        'error': 503,
+        'message': 'service unavailable'
+    }), 503
 
 ## ROUTES
 '''
