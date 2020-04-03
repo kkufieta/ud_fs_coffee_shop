@@ -63,7 +63,31 @@ POST /drinks
 returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
     or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def post_drink(jwt_payload):
+    body = request.get_json()
+    if not body:
+        abort(400)
+    if not all(key in body for key in ['title', 'recipe']):
+        abort(400)
+    title = body['title']
+    recipe = body['recipe']
+    if not isinstance(recipe, list):
+        abort(400)
+    for recipe_part in recipe:
+        if not all(key in recipe_part for key in ['color', 'name', 'parts']):
+            abort(400)
+    recipe = json.dumps(recipe)
+    try:
+        drink = Drink(title=title, recipe=recipe)
+        drink.insert()
+        return jsonify({
+            'success': True,
+            'drinks': drink.long()
+        })
+    except:
+        abort(422)
 
 '''
 @TODO implement endpoint
