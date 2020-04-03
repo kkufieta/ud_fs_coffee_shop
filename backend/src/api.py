@@ -12,7 +12,7 @@ setup_db(app)
 CORS(app)
 
 '''
-@TODO uncomment the following line to initialize the datbase
+Uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
@@ -23,31 +23,29 @@ CORS(app)
 # ROUTES
 # ======
 '''
-Get drinks endpoint.
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
+GET /drinks
+    it should be a public endpoint
+    it should contain only the drink.short() data representation
+returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
+    or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks')
+@app.route('/drinks', methods=['GET'])
 def get_drinks():
     drinks = Drink.query.all()
     drinks = [drink.short() for drink in drinks]
     return jsonify({
         'success': True,
         'drinks': drinks
-        })
+    })
 
 '''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
+GET /drinks-detail
+    it should require the 'get:drinks-detail' permission
+    it should contain the drink.long() data representation
+returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
+    or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks-detail')
+@app.route('/drinks-detail', methods=['GET'])
 @requires_auth('get:drinks-detail')
 def get_drinks_detail(jwt_payload):
     drinks = Drink.query.all()
@@ -58,13 +56,12 @@ def get_drinks_detail(jwt_payload):
     })
 
 '''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
+POST /drinks
+    it should create a new row in the drinks table
+    it should require the 'post:drinks' permission
+    it should contain the drink.long() data representation
+returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
+    or appropriate status code indicating reason for failure
 '''
 
 
@@ -91,7 +88,6 @@ def get_drinks_detail(jwt_payload):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
-
 
 ## Error Handling
 
@@ -138,7 +134,7 @@ def not_found(error):
         'success': False,
         'error': 404,
         'message': 'method not allowed'
-                    }), 404
+    }), 404
 
 @app.errorhandler(405)
 def not_found(error):
@@ -148,9 +144,6 @@ def not_found(error):
         'message': 'method not allowed'
     }), 405
 
-'''
-Error handling for unprocessable entity
-'''
 @app.errorhandler(422)
 def unprocessable_entity(error):
     return jsonify({
