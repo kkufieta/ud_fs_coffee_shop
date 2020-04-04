@@ -140,17 +140,34 @@ def patch_drink(jwt_payload, id):
 
 
 '''
-@TODO implement endpoint
-    DELETE /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
+DELETE /drinks/<id>
+    where <id> is the existing model id
+    it should respond with a 404 error if <id> is not found
+    it should delete the corresponding row for <id>
+    it should require the 'delete:drinks' permission
+returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
+    or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def delete_drink(jwt_payload, id):
+    if not id:
+        abort(404)
+    try:
+        drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if not drink:
+            abort(404)
+        drink.update()
+        drink.delete()
+        return jsonify({
+            'success': True,
+            'delete': id
+        })
+    except Exception:
+        abort(404)
 
-## Error Handling
+# Error Handling
+
 
 '''
 Error handler for AuthError.
