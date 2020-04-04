@@ -38,6 +38,7 @@ def get_drinks():
         'drinks': drinks
     })
 
+
 '''
 GET /drinks-detail
     it should require the 'get:drinks-detail' permission
@@ -55,6 +56,7 @@ def get_drinks_detail(jwt_payload):
         'drinks': drinks
     })
 
+
 '''
 POST /drinks
     it should create a new row in the drinks table
@@ -70,14 +72,14 @@ def post_drink(jwt_payload):
     if not body:
         abort(400)
     if not all(key in body for key in ['title', 'recipe']):
-        abort(400)
+        abort(422)
     title = body['title']
     recipe = body['recipe']
     if not isinstance(recipe, list):
-        abort(400)
+        abort(422)
     for recipe_part in recipe:
         if not all(key in recipe_part for key in ['color', 'name', 'parts']):
-            abort(400)
+            abort(422)
     recipe = json.dumps(recipe)
     try:
         drink = Drink(title=title, recipe=recipe)
@@ -86,8 +88,9 @@ def post_drink(jwt_payload):
             'success': True,
             'drinks': drink.long()
         })
-    except:
-        abort(422)
+    except Exception:
+        abort(400)
+
 
 '''
 @TODO implement endpoint
