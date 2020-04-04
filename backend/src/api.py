@@ -93,16 +93,50 @@ def post_drink(jwt_payload):
 
 
 '''
-@TODO implement endpoint
-    PATCH /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
-        or appropriate status code indicating reason for failure
+PATCH /drinks/<id>
+    where <id> is the existing model id
+    it should respond with a 404 error if <id> is not found
+    it should update the corresponding row for <id>
+    it should require the 'patch:drinks' permission
+    it should contain the drink.long() data representation
+returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
+    or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def patch_drink(jwt_payload, id):
+    if not id:
+        abort(404)
+    try:
+        drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if not drink:
+            abort(404)
+        body = request.get_json()
+        if not body:
+            abort(400)
+        if not any(key in body for key in ['title', 'recipe']):
+            abort(400)
+        if 'title' in body:
+            drink.title = body['title']
+        if 'recipe' in body:
+            recipe = body['recipe']
+            if not isinstance(recipe, list):
+                abort(422)
+            for recipe_part in recipe:
+                if not all(
+                    key in recipe_part for key in [
+                        'color',
+                        'name',
+                        'parts']):
+                    abort(422)
+            drink.recipe = json.dumps(body['recipe'])
+        drink.update()
+        return jsonify({
+            'success': True,
+            'drinks': [drink.long()]
+        })
+    except Exception:
+        abort(404)
 
 
 '''
